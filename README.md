@@ -1,4 +1,4 @@
-# HIF to JPG
+# SONY HIF to JPG
 
 An installable web app (PWA) that converts the 10-bit HEIF photos Sony cameras save as `.HIF` into JPGs that work in any phone app. Everything happens on the device. Nothing is uploaded, and once the app is installed it works without a connection.
 
