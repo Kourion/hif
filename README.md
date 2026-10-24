@@ -32,7 +32,7 @@ Settings (gear icon):
 
 The app is a static site in [`app/`](app/) with no build step. Any HTTPS host works.
 
-**GitHub Pages:** the workflow in [`.github/workflows/pages.yml`](.github/workflows/pages.yml) publishes `app/` on every push to `main`. Turn it on once under **Settings → Pages → Build and deployment → Source: GitHub Actions**. The app will then be at `https://<user>.github.io/<repo>/`. Pages on private repositories needs a paid GitHub plan.
+**GitHub Pages:** the workflow in [`.github/workflows/pages.yml`](.github/workflows/pages.yml) publishes `app/` on every push to `main`. Turn it on once under **Settings → Pages → Build and deployment → Source: GitHub Actions**. Don't choose "Deploy from a branch": that publishes this README instead of the app. The app will then be at `https://<user>.github.io/<repo>/`. Pages on private repositories needs a paid GitHub plan.
 
 **Other hosts:** upload the contents of `app/`. Make sure `.wasm` files are served as `application/wasm`. The workflow stamps a new cache version into `app/sw.js` on each deploy. If you deploy another way, change `VERSION` in `sw.js` whenever you release, or installed copies keep the old version.
 
