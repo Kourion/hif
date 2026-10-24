@@ -1,2 +1,83 @@
-# hif
-Convert sony .HIF files to file formats usable in phone apps.
+# HIF to JPG
+
+An installable web app (PWA) that converts the 10-bit HEIF photos Sony cameras save as `.HIF` into JPGs that work in any phone app. Everything happens on the device. Nothing is uploaded, and once the app is installed it works without a connection.
+
+- Reads 10-bit 4:2:2 and 4:2:0 HEIF from Sony Alpha cameras (and other HEIF/HEIC files).
+- Keeps camera info (date, camera, lens, exposure) in the JPG, with an option to strip GPS location.
+- Converts Sony's HLG stills (BT.2020 HDR) to normal SDR JPGs with highlight roll-off.
+- Uses several CPU cores. The tiles of each photo are decoded in parallel (a dense 33 MP file: 8.3 s on one core, 3.8 s on four, in desktop Chromium).
+- Saves to Downloads, shares to any app (Google Photos, WhatsApp and so on), or saves everything as one ZIP.
+- Shows up in Android's share sheet, so you can send HIF files to it from Files or a gallery app.
+
+## Install on Android
+
+The app has to be served over HTTPS once (see [Hosting](#hosting)). Then:
+
+1. Open the app's address in Chrome on the phone.
+2. Tap **Install app** in the top bar, or use Chrome's menu → **Install app** / **Add to Home screen**.
+3. Open **HIF to JPG** from the home screen. It now runs offline.
+
+To convert, tap **Open HIF photos** and pick the files, or select them in the Files app and use **Share → HIF to JPG**. Converted photos appear on a contact sheet. Tap one to view it, or use **Save all**, **Share** or **ZIP** at the bottom.
+
+Settings (gear icon):
+
+| Setting | Default | Notes |
+| --- | --- | --- |
+| JPG quality | 90 | Chrome's encoder uses 4:2:0 colour below 100 and 4:4:4 at 100. |
+| Size | Full | Limit the long side to 4096, 2048 or 1080 px for smaller files. |
+| Keep camera info | On | Copies the Exif and XMP blocks from the HIF. |
+| Remove location | Off | Wipes the GPS block, including the coordinates themselves. |
+
+## Hosting
+
+The app is a static site in [`app/`](app/) with no build step. Any HTTPS host works.
+
+**GitHub Pages:** the workflow in [`.github/workflows/pages.yml`](.github/workflows/pages.yml) publishes `app/` on every push to `main`. Turn it on once under **Settings → Pages → Build and deployment → Source: GitHub Actions**. The app will then be at `https://<user>.github.io/<repo>/`. Pages on private repositories needs a paid GitHub plan.
+
+**Other hosts:** upload the contents of `app/`. Make sure `.wasm` files are served as `application/wasm`. The workflow stamps a new cache version into `app/sw.js` on each deploy. If you deploy another way, change `VERSION` in `sw.js` whenever you release, or installed copies keep the old version.
+
+## How it works
+
+```
+ file ──► lead worker: open, read Exif / colour / tile grid
+            │
+            ├─► worker 1..n: decode HEVC tile (libheif + libde265, WebAssembly)
+            │                Y'CbCr 10-bit ──► sRGB 8-bit with dither ──► rotate/crop
+            │
+            └─◄ tiles painted into the lead's canvas ──► JPEG encode ──► Exif/XMP/ICC inserted
+```
+
+- **Decoding:** [libheif](https://github.com/strukturag/libheif) 1.23.5 compiled to WebAssembly (from the [`libheif-js`](https://www.npmjs.com/package/libheif-js) package, vendored in `app/vendor/libheif/`). Sony HIF files are grids of 512×512 HEVC tiles, so every idle worker decodes tiles of the same photo. Each worker only holds about one tile at a time.
+- **Colour:** the app does its own Y'CbCr → RGB conversion from the untouched 10-bit samples. It follows the file's `nclx` box (matrix, range, primaries, transfer), upsamples chroma at the HEVC sample positions and adds a little dither when going to 8 bits, so smooth skies don't band. libheif is asked to return the samples unconverted, because by default it re-encodes them to BT.601.
+- **HLG / PQ:** HDR files are linearised and converted from BT.2020 to sRGB primaries, with diffuse white at 203 nits ([BT.2408](https://www.itu.int/pub/R-REP-BT.2408)). Highlights above 80% of SDR white are rolled off smoothly up to the 1000-nit HLG peak instead of clipping. The result is a normal SDR JPG, not an HDR one.
+- **Orientation:** rotation, mirroring and crop stored in the HEIF are applied to the pixels, and the Exif orientation is then reset to 1 so viewers don't rotate the photo twice. If the HEIF has no such properties, the Exif orientation is kept as the camera wrote it.
+- **Offline:** a service worker caches the app and the 1.4 MB decoder on first visit.
+
+## Development
+
+```sh
+npm start             # serve app/ at http://localhost:8080
+npm test              # decoder checks in Node + the app in headless Chromium
+npm run test:node     # decoder and metadata checks only
+node tests/run-tests.mjs --large        # also time a 33 MP photo
+node tests/run-tests.mjs --screenshots  # write UI screenshots to tests/screenshots/
+```
+
+The browser tests need Playwright with Chromium (`npm install && npx playwright install chromium`).
+
+The test photos in [`tests/fixtures/`](tests/fixtures/) are generated by [`make_hif.py`](tests/fixtures/make_hif.py) (needs Python with numpy and ffmpeg with libx265). They copy the layout of Sony's files: a grid of hidden 10-bit HEVC tiles, an `nclx` colour box, an Exif item and a thumbnail. Each comes with a JSON file listing colour patches and their expected values, and the tests check the converted JPGs against them. For example:
+
+```sh
+python3 tests/fixtures/make_hif.py out.HIF --width 7008 --height 4672 --hlg --irot 1 --gps
+```
+
+## Limitations
+
+- Tested with generated Sony-style files, not with photos from a real camera yet. If a camera file fails, please open an issue with the file attached.
+- Large photos need memory. Converting a 33 MP photo takes about 330 MB with one decoder and about 40 MB more for each extra one. The app picks the number of decoders from the phone's RAM and cores. If a phone still runs out, close other apps or choose a smaller size in Settings.
+- HLG photos become SDR JPGs. The tone mapping is a reasonable default, not Sony's own rendering.
+- Targets Chrome on Android (and desktop Chrome, Edge and Firefox). iOS Safari is not tested.
+
+## Licences
+
+The decoder in `app/vendor/libheif/` is libheif with libde265, licensed under the GNU LGPL 3.0 (see [`app/vendor/libheif/LICENSE`](app/vendor/libheif/LICENSE)). It is loaded as a separate file and can be replaced with another build of the same version.
