@@ -73,7 +73,6 @@ python3 tests/fixtures/make_hif.py out.HIF --width 7008 --height 4672 --hlg --ir
 
 ## Limitations
 
-- Tested with generated Sony-style files, not with photos from a real camera yet. If a camera file fails, please open an issue with the file attached.
 - Large photos need memory. Converting a 33 MP photo takes about 330 MB with one decoder and about 40 MB more for each extra one. The app picks the number of decoders from the phone's RAM and cores. If a phone still runs out, close other apps or choose a smaller size in Settings.
 - HLG photos become SDR JPGs. The tone mapping is a reasonable default, not Sony's own rendering.
 - Targets Chrome on Android (and desktop Chrome, Edge and Firefox). iOS Safari is not tested.
