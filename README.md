@@ -17,8 +17,20 @@ And after installation internet is also no longer needed.
 2. Tap **Install app** in the top right corner, or use Chrome's menu → **Install app** / **Add to Home screen**.
 3. Open **HIF to JPG** from the home screen. It now runs offline.
 
+## Usage
+
 To convert, tap **Open HIF photos** and pick the files, or select them in any other app and use **Share → HIF to JPG**.
 Converted photos appear on a contact sheet. Tap one to view it, or use **Save all**, **Share** or **ZIP** at the bottom.
+
+Settings (gear icon):
+
+| Setting | Default | Notes |
+| --- | --- | --- |
+| JPG quality | 90 | Chrome's encoder uses 4:2:0 colour below 100 and 4:4:4 at 100. |
+| Size | Full | Limit the long side to 4096, 2048 or 1080 px for smaller files. |
+| Keep camera info | On | Copies the Exif and XMP blocks from the HIF. |
+| Remove location | Off | Wipes the GPS block, including the coordinates themselves. |
+
 ## Limitations
 
 - Large photos need memory. Converting a 33 MP photo takes about 330 MB with one decoder and about 40 MB more for each extra one. The app picks the number of decoders from the phone's RAM and cores. If a phone still runs out, close other apps or choose a smaller size in Settings.
