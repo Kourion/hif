@@ -35,3 +35,16 @@ jobs:
           path: app
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      # With "Deploy from a branch", GitHub also builds the repository on every
+      # push and that build replaces the app with a page rendered from
+      # README.md. The workflow token cannot change the setting, so flag it.
+      - name: Check the Pages source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          build_type=$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq .build_type)
+          if [ "$build_type" != "workflow" ]; then
+            echo "::error title=Pages source is set to 'Deploy from a branch'::The app was deployed, but GitHub's branch build will replace it with the README. In Settings > Pages > Build and deployment, set Source to 'GitHub Actions'."
+            exit 1
+          fi
