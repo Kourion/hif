@@ -1,0 +1,15 @@
+{
+  "name": "hif-to-jpg",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Installable offline web app that converts 10-bit Sony HEIF (.HIF) photos to JPG on the device.",
+  "scripts": {
+    "start": "node tools/serve.mjs 8080",
+    "test": "node tests/run-tests.mjs",
+    "test:node": "node tests/run-tests.mjs --node",
+    "icons": "node tools/render-icons.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.50.0"
+  }
+}

@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>HIF to JPG</title>
+  <meta name="description" content="Convert 10-bit HEIF (.HIF) photos from Sony cameras to JPG on your device. Nothing is uploaded and it works offline.">
+  <meta name="theme-color" content="#1f2226" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#e9ebee" media="(prefers-color-scheme: light)">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/app.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <svg width="0" height="0" class="sprite" aria-hidden="true">
+    <symbol id="i-gear" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Zm7.4-1.9.9.7a.8.8 0 0 1 .2 1l-1.4 2.4a.8.8 0 0 1-1 .3l-1.1-.4a7.3 7.3 0 0 1-1.6.9l-.2 1.2a.8.8 0 0 1-.8.6h-2.8a.8.8 0 0 1-.8-.6l-.2-1.2a7.3 7.3 0 0 1-1.6-.9l-1.1.4a.8.8 0 0 1-1-.3l-1.4-2.4a.8.8 0 0 1 .2-1l.9-.7a7.4 7.4 0 0 1 0-1.9l-.9-.7a.8.8 0 0 1-.2-1l1.4-2.4a.8.8 0 0 1 1-.3l1.1.4a7.3 7.3 0 0 1 1.6-.9l.2-1.2a.8.8 0 0 1 .8-.6h2.8a.8.8 0 0 1 .8.6l.2 1.2c.6.2 1.1.5 1.6.9l1.1-.4a.8.8 0 0 1 1 .3l1.4 2.4a.8.8 0 0 1-.2 1l-.9.7a7.4 7.4 0 0 1 0 1.9Z"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 15V4m0 0L8 8m4-4 4 4M7 11H6a1.5 1.5 0 0 0-1.5 1.5v6A1.5 1.5 0 0 0 6 20h12a1.5 1.5 0 0 0 1.5-1.5v-6A1.5 1.5 0 0 0 18 11h-1"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-prev" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="m14.5 6-6 6 6 6"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="m9.5 6 6 6-6 6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></symbol>
+  </svg>
+
+  <header class="topbar">
+    <h1 class="brand">HIF to JPG</h1>
+    <div class="topbar-actions">
+      <button type="button" id="install" class="btn btn-quiet" hidden>Install app</button>
+      <button type="button" id="open-settings" class="icon-btn" aria-label="Settings" aria-haspopup="dialog">
+        <svg aria-hidden="true"><use href="#i-gear"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section id="intake" class="intake" aria-labelledby="pick-label">
+      <button type="button" id="pick" class="pick">
+        <span class="bracket tl" aria-hidden="true"></span>
+        <span class="bracket tr" aria-hidden="true"></span>
+        <span class="bracket bl" aria-hidden="true"></span>
+        <span class="bracket br" aria-hidden="true"></span>
+        <span id="pick-label" class="pick-label">Open HIF photos</span>
+        <span class="pick-hint">10-bit HEIF from your camera, converted to JPG</span>
+      </button>
+      <p class="intake-note">Converted on this device. Nothing is uploaded, and it works without a connection once installed.</p>
+      <p class="intake-tip">Once installed, you can also share HIF files to this app from Files or your gallery.</p>
+      <p class="intake-drop">On a computer, you can drop files anywhere on this page.</p>
+    </section>
+
+    <section id="sheet" class="sheet" aria-labelledby="summary" hidden>
+      <div class="sheet-head">
+        <p id="summary" class="summary" aria-live="polite"></p>
+        <button type="button" id="clear-all" class="btn btn-quiet">Clear</button>
+      </div>
+      <ol id="frames" class="frames">
+        <li id="add-slot" class="add-slot">
+          <button type="button" id="add-more" class="pick pick-small">
+            <span class="bracket tl" aria-hidden="true"></span>
+            <span class="bracket tr" aria-hidden="true"></span>
+            <span class="bracket bl" aria-hidden="true"></span>
+            <span class="bracket br" aria-hidden="true"></span>
+            <svg aria-hidden="true"><use href="#i-plus"/></svg>
+            <span class="pick-small-label">Add photos</span>
+          </button>
+        </li>
+      </ol>
+    </section>
+  </main>
+
+  <div id="actionbar" class="actionbar" hidden>
+    <button type="button" id="save-all" class="btn btn-primary">
+      <svg aria-hidden="true"><use href="#i-save"/></svg><span>Save all</span>
+    </button>
+    <button type="button" id="share-all" class="btn">
+      <svg aria-hidden="true"><use href="#i-share"/></svg><span>Share</span>
+    </button>
+    <button type="button" id="zip-all" class="btn" aria-label="Save all as one ZIP file">ZIP</button>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden>
+    <span id="toast-text"></span>
+    <button type="button" id="toast-action" class="btn btn-quiet" hidden></button>
+  </div>
+
+  <input type="file" id="file-input" multiple hidden>
+
+  <template id="frame-template">
+    <li class="frame" data-state="queued">
+      <button type="button" class="frame-open" disabled>
+        <span class="frame-well">
+          <img class="frame-img" alt="" decoding="async" hidden>
+          <span class="frame-progress" aria-hidden="true"></span>
+        </span>
+      </button>
+      <div class="frame-caption">
+        <p class="frame-number"><span class="frame-prefix"></span><span class="frame-digits"></span></p>
+        <p class="frame-readout"></p>
+        <p class="frame-status"></p>
+      </div>
+    </li>
+  </template>
+
+  <dialog id="settings" class="panel" aria-labelledby="settings-title">
+    <form method="dialog" class="panel-body">
+      <div class="panel-head">
+        <h2 id="settings-title">Settings</h2>
+        <button type="submit" class="icon-btn" aria-label="Close settings">
+          <svg aria-hidden="true"><use href="#i-close"/></svg>
+        </button>
+      </div>
+
+      <div class="field">
+        <label for="quality" class="field-label">JPG quality <output id="quality-value" for="quality"></output></label>
+        <input type="range" id="quality" min="60" max="100" step="1">
+        <p class="field-help">90 keeps detail with a reasonable file size. 100 also keeps full colour resolution, but files get very large.</p>
+      </div>
+
+      <fieldset class="field">
+        <legend class="field-label">Size</legend>
+        <div class="segmented" id="size-options">
+          <label><input type="radio" name="size" value="0"><span>Full</span></label>
+          <label><input type="radio" name="size" value="4096"><span>4096</span></label>
+          <label><input type="radio" name="size" value="2048"><span>2048</span></label>
+          <label><input type="radio" name="size" value="1080"><span>1080</span></label>
+        </div>
+        <p class="field-help">Longest side in pixels. Smaller photos are quicker to share and use less memory.</p>
+      </fieldset>
+
+      <div class="field">
+        <label class="check"><input type="checkbox" id="keep-meta"><span>Keep camera info</span></label>
+        <p class="field-help">Copies date, camera, lens and exposure settings into the JPG.</p>
+        <label class="check"><input type="checkbox" id="remove-gps"><span>Remove location</span></label>
+        <p class="field-help">Strips GPS coordinates before you share.</p>
+      </div>
+
+      <div class="field" id="reconvert-field" hidden>
+        <button type="button" id="reconvert" class="btn">Convert again with these settings</button>
+      </div>
+
+      <div class="about">
+        <p id="offline-status">Checking offline support…</p>
+        <p>Decoding by <a href="https://github.com/strukturag/libheif" target="_blank" rel="noopener">libheif</a> (LGPL&nbsp;3.0), running inside this app. <a href="vendor/libheif/LICENSE" target="_blank" rel="noopener">Licence</a></p>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="viewer" class="viewer" aria-labelledby="viewer-title">
+    <div class="viewer-top">
+      <h2 id="viewer-title" class="viewer-title"></h2>
+      <button type="button" id="viewer-close" class="icon-btn" aria-label="Close photo">
+        <svg aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+    </div>
+    <div class="viewer-stage">
+      <img id="viewer-img" alt="">
+      <button type="button" id="viewer-prev" class="icon-btn viewer-nav prev" aria-label="Previous photo">
+        <svg aria-hidden="true"><use href="#i-prev"/></svg>
+      </button>
+      <button type="button" id="viewer-next" class="icon-btn viewer-nav next" aria-label="Next photo">
+        <svg aria-hidden="true"><use href="#i-next"/></svg>
+      </button>
+    </div>
+    <div class="viewer-bottom">
+      <dl id="viewer-details" class="details"></dl>
+      <div class="viewer-actions">
+        <button type="button" id="viewer-save" class="btn btn-primary">
+          <svg aria-hidden="true"><use href="#i-save"/></svg><span>Save JPG</span>
+        </button>
+        <button type="button" id="viewer-share" class="btn">
+          <svg aria-hidden="true"><use href="#i-share"/></svg><span>Share</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
+</body>
+</html>

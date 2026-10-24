@@ -1,0 +1,103 @@
+{
+ "width": 790,
+ "height": 1180,
+ "hlg": false,
+ "chroma": "420",
+ "full_range": true,
+ "irot": 3,
+ "transformed": true,
+ "exif_orientation_in": 1,
+ "exif_orientation_out": 1,
+ "gps": false,
+ "patches": [
+  {
+   "name": "gray50",
+   "x": 394,
+   "y": 65,
+   "rgb": [
+    128,
+    128,
+    128
+   ]
+  },
+  {
+   "name": "red",
+   "x": 394,
+   "y": 215,
+   "rgb": [
+    191,
+    38,
+    31
+   ]
+  },
+  {
+   "name": "green",
+   "x": 394,
+   "y": 365,
+   "rgb": [
+    51,
+    166,
+    64
+   ]
+  },
+  {
+   "name": "blue",
+   "x": 394,
+   "y": 515,
+   "rgb": [
+    38,
+    64,
+    178
+   ]
+  },
+  {
+   "name": "skin",
+   "x": 394,
+   "y": 665,
+   "rgb": [
+    204,
+    153,
+    128
+   ]
+  },
+  {
+   "name": "yellow",
+   "x": 394,
+   "y": 815,
+   "rgb": [
+    191,
+    178,
+    51
+   ]
+  },
+  {
+   "name": "dark",
+   "x": 394,
+   "y": 965,
+   "rgb": [
+    26,
+    26,
+    26
+   ]
+  },
+  {
+   "name": "white80",
+   "x": 394,
+   "y": 1115,
+   "rgb": [
+    204,
+    204,
+    204
+   ]
+  }
+ ],
+ "marker": {
+  "x": 61,
+  "y": 56,
+  "rgb": [
+   255,
+   255,
+   255
+  ]
+ }
+}
